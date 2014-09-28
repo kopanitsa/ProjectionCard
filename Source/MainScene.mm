@@ -13,7 +13,14 @@
 #import "Effect3.h"
 
 // #define USE_FRONT_CAMERA
-#define THRESHOLD_HALLOW 0.2
+
+// card image : hallow
+NSString * const kImageNameHallow = @"hallow";
+const float kThresholdHallow = 0.2f;
+const int kDisplayThreshold_effect1 = 80; // display effect 1 with 80% possibility
+const int kDisplayThreshold_effect2 = 90; // display effect 2 with (90-80)% possibility
+const int kDisplayThreshold_effect3 = 90; // display effect 3 with (90-90)% possibility
+
 
 
 @implementation MainScene {
@@ -173,19 +180,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 -(void)detectHallow:(UIImage*)image {
-    NSString* match = @"hallow";
+    NSString* match = kImageNameHallow;
     double value = [OpenCVUtil templateMatch:image target:match];
     
     NSLog(@"value for %@ is %f", match, value);
-    if (value > THRESHOLD_HALLOW) {
+    if (value > kThresholdHallow) {
         if (mState == STATE_CARD_OFF) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (arc4random() % 100 < 80) {
+                NSInteger v = arc4random() % 100;
+                if (v < kDisplayThreshold_effect1) {
                     NSLog(@"show effect 1!!!");
                     [mEffect1Node show];
-                } else {
+                } else if (v < kDisplayThreshold_effect2) {
                     NSLog(@"show effect 2!!!");
                     [mEffect2Node show];
+                } else if (v < kDisplayThreshold_effect3) {
+                    NSLog(@"show effect 3!!!");
+                    [mEffect3Node show];
+                } else {
+                    // do nothing
                 }
             });
         }
