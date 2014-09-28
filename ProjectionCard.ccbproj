@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>cocos2dUpdateIgnoredVersions</key>
-	<array/>
+	<array>
+		<string>3.2.1</string>
+	</array>
 	<key>defaultOrientation</key>
 	<integer>0</integer>
 	<key>designTarget</key>
@@ -20,16 +22,14 @@
 	<integer>0</integer>
 	<key>engine</key>
 	<integer>0</integer>
+	<key>excludedFromPackageMigration</key>
+	<false/>
 	<key>exporter</key>
 	<string>ccbi</string>
 	<key>fileType</key>
 	<string>CocosBuilderProject</string>
 	<key>fileVersion</key>
 	<integer>1</integer>
-	<key>flattenPaths</key>
-	<false/>
-	<key>needRepublish</key>
-	<false/>
 	<key>onlyPublishCCBs</key>
 	<false/>
 	<key>publishAudioQuality_android</key>
@@ -84,6 +84,8 @@
 		<dict/>
 		<key>ccbResources</key>
 		<dict>
+			<key>isSmartSpriteSheet</key>
+			<true/>
 			<key>previewFolderHidden</key>
 			<true/>
 		</dict>
@@ -164,10 +166,15 @@
 			<key>tabletScale</key>
 			<integer>1</integer>
 		</dict>
+		<key>hallowResouces</key>
+		<dict>
+			<key>isSmartSpriteSheet</key>
+			<true/>
+		</dict>
 	</dict>
 	<key>versionStr</key>
-	<string>Version: 1.1.0
-GitHub: d058712eaf
+	<string>Version: 1.2.1
+GitHub: dde98b0763
 </string>
 </dict>
 </plist>

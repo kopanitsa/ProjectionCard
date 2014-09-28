@@ -8,9 +8,11 @@
 
 #import "MainScene.h"
 #import "Hallow.h"
+#import "Effect1.h"
+#import "Effect2.h"
+#import "Effect3.h"
 
 // #define USE_FRONT_CAMERA
-
 #define THRESHOLD_HALLOW 0.2
 
 
@@ -18,6 +20,11 @@
     UIViewController* mUiViewController;
     
     Hallow* mHallowNode;
+    Effect1* mEffect1Node;
+    Effect2* mEffect2Node;
+    Effect3* mEffect3Node;
+    
+    State mState;
 }
 
 - (void)didLoadFromCCB {
@@ -32,6 +39,7 @@
     [self setupAVCapture];
     
     [self initHallows];
+    mState = STATE_CARD_OFF;
 }
 
 - (void) onExit {
@@ -43,6 +51,21 @@
     mHallowNode = (Hallow*)[CCBReader load:@"Hallow"];
     [mHallowNode setup];
     [self addChild:mHallowNode];
+
+    mEffect1Node = (Effect1*)[CCBReader load:@"Effect1"];
+    [mEffect1Node setup];
+    [self addChild:mEffect1Node];
+    [mEffect1Node hide];
+    
+    mEffect2Node = (Effect2*)[CCBReader load:@"Effect2"];
+    [mEffect2Node setup];
+    [self addChild:mEffect2Node];
+    [mEffect2Node hide];
+    
+    mEffect3Node = (Effect3*)[CCBReader load:@"Effect3"];
+    [mEffect3Node setup];
+    [self addChild:mEffect3Node];
+    [mEffect3Node hide];
 }
 
 #pragma mark - Private methods
@@ -134,21 +157,67 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
     UIImage *image = [AVFoundationUtil imageFromSampleBuffer:sampleBuffer];
+    [self logic:image];
+}
+
+-(void)logic:(UIImage*)input {
+    [self detectHallow:input];
+    //[self detectSomething:input];
+}
+
+-(void) hideAll {
+    [mHallowNode hide];
+    [mEffect1Node hide];
+    [mEffect2Node hide];
+    [mEffect3Node hide];
+}
+
+-(void)detectHallow:(UIImage*)image {
+    NSString* match = @"hallow";
+    double value = [OpenCVUtil templateMatch:image target:match];
     
-    
-    double value = [OpenCVUtil templateMatch:image target:@"hallow"];
-    NSLog(@"value is %f", value);
+    NSLog(@"value for %@ is %f", match, value);
     if (value > THRESHOLD_HALLOW) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [mHallowNode show];
-        });
+        if (mState == STATE_CARD_OFF) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (arc4random() % 100 < 80) {
+                    NSLog(@"show effect 1!!!");
+                    [mEffect1Node show];
+                } else {
+                    NSLog(@"show effect 2!!!");
+                    [mEffect2Node show];
+                }
+            });
+        }
+        mState = STATE_CARD_ON;
     } else {
+        mState = STATE_CARD_OFF;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [mHallowNode hide];
+            [self hideAll];
         });
     }
 }
 
-
+/** template
+-(void)detectSomething:(UIImage*)image {
+    NSString* match = @"something";
+    double value = [OpenCVUtil templateMatch:image target:match];
+    
+    NSLog(@"value for %@ is %f", match, value);
+    if (value > THRESHOLD_SOMETHING) {
+        if (mState == STATE_CARD_OFF) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // logic
+            });
+        }
+        mState = STATE_CARD_ON;
+    } else {
+        mState = STATE_CARD_OFF;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self hideAll];
+        });
+    }
+}
+*/
 
 @end

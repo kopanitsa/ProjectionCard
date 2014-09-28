@@ -49,7 +49,7 @@
 				<key>customClass</key>
 				<string></string>
 				<key>displayName</key>
-				<string>hallow</string>
+				<string>ProjectionCard1</string>
 				<key>memberVarAssignmentName</key>
 				<string></string>
 				<key>memberVarAssignmentType</key>
@@ -71,8 +71,8 @@
 						<string>Position</string>
 						<key>value</key>
 						<array>
-							<real>0.0</real>
-							<real>0.0</real>
+							<real>32.000003814697266</real>
+							<real>-5.0000014305114746</real>
 							<integer>0</integer>
 							<integer>0</integer>
 							<integer>0</integer>
@@ -98,7 +98,7 @@
 						<array>
 							<real>1</real>
 							<real>1</real>
-							<false/>
+							<true/>
 							<integer>0</integer>
 						</array>
 					</dict>
@@ -110,7 +110,7 @@
 						<key>value</key>
 						<array>
 							<string></string>
-							<string>ccbResources/hallow.png</string>
+							<string>ccbResources/ProjectionCard1.png</string>
 						</array>
 					</dict>
 					<dict>
@@ -127,10 +127,12 @@
 						</array>
 					</dict>
 				</array>
+				<key>selected</key>
+				<true/>
 			</dict>
 		</array>
 		<key>customClass</key>
-		<string>Hallow</string>
+		<string>Effect1</string>
 		<key>displayName</key>
 		<string>CCNode</string>
 		<key>memberVarAssignmentName</key>
@@ -145,7 +147,7 @@
 				<key>type</key>
 				<string>StringSimple</string>
 				<key>value</key>
-				<string>Hallow</string>
+				<string>Effect1</string>
 			</dict>
 			<dict>
 				<key>name</key>
