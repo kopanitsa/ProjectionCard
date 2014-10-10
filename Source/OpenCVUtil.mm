@@ -166,7 +166,11 @@
 + (double)templateMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename {
     // source image
     IplImage *srcImage = [self IplImageFromUIImage:srcUIImage];
-    cv::Mat img_1 = cv::cvarrToMat(srcImage);
+    cv::Mat img_pre1 = cv::cvarrToMat(srcImage);
+    // set ROI
+//    cv::Mat stub = cv::Mat(srcImage->width, srcImage->height, CV_8UC1);
+//    cv::Mat img_1 = cv::cvGetCols(img_pre1, &stub, srcImage->width*0.5, srcImage->height);
+    cv::Mat img_1 = img_pre1(cv::Rect(0, 0, srcImage->width, srcImage->height*0.5));
     
     // template image
     UIImage *templateUIimage = [UIImage imageNamed:targetFilename];

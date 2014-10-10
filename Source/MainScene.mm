@@ -12,14 +12,29 @@
 #import "Effect2.h"
 #import "Effect3.h"
 
-// #define USE_FRONT_CAMERA
+#define USE_FRONT_CAMERA
 
 // card image : hallow
 NSString * const kImageNameHallow = @"hallow";
-const float kThresholdHallow = 0.2f;
-const int kDisplayThreshold_effect1 = 80; // display effect 1 with 80% possibility
-const int kDisplayThreshold_effect2 = 90; // display effect 2 with (90-80)% possibility
-const int kDisplayThreshold_effect3 = 90; // display effect 3 with (90-90)% possibility
+const float kThresholdHallow = 0.9f;
+const int kDisplayThreshold_effect1 = 1.0; // display effect 1 with 80% possibility
+const int kDisplayThreshold_effect2 = 0; // display effect 2 with (90-80)% possibility
+const int kDisplayThreshold_effect3 = 0; // display effect 3 with (90-90)% possibility
+
+// card image : card1
+NSString * const kImageNameCard1 = @"hallow";
+const float kThresholdCard1 = 0.2f;
+const int kDisplayThreshold_card1_effect1 = 100;
+
+// card image : card2
+NSString * const kImageNameCard2 = @"fire";
+const float kThresholdCard2 = 0.45f;
+const int kDisplayThreshold_card2_effect2 = 100;
+
+// card image : card3
+NSString * const kImageNameCard3 = @"bat";
+const float kThresholdCard3 = 0.37f;
+const int kDisplayThreshold_card3_effect3 = 100;
 
 
 
@@ -168,8 +183,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 -(void)logic:(UIImage*)input {
-    [self detectHallow:input];
-    //[self detectSomething:input];
+    bool ret = false;
+    ret = [self detectHallow:input];
+    if (!ret) {
+        ret = [self detectCard1:input];
+    }
+    if (!ret){
+        ret = [self detectCard2:input];
+    }
+    if (!ret) {
+        ret = [self detectCard3:input];
+    }
+    mState = ret ? STATE_CARD_ON : STATE_CARD_OFF;
 }
 
 -(void) hideAll {
@@ -179,35 +204,114 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [mEffect3Node hide];
 }
 
--(void)detectHallow:(UIImage*)image {
+-(bool)detectHallow:(UIImage*)image {
     NSString* match = kImageNameHallow;
     double value = [OpenCVUtil templateMatch:image target:match];
     
-    NSLog(@"value for %@ is %f", match, value);
+    NSLog(@"--------------", match, value);
     if (value > kThresholdHallow) {
-        if (mState == STATE_CARD_OFF) {
+//        [mEffect1Node show];
+//        if (mState == STATE_CARD_OFF) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                NSInteger v = arc4random() % 100;
+//                if (v < kDisplayThreshold_effect1) {
+//                    NSLog(@"show effect 1!!!");
+//                    [mEffect1Node show];
+//                } else if (v < kDisplayThreshold_effect2) {
+//                    NSLog(@"show effect 2!!!");
+//                    [mEffect2Node show];
+//                } else if (v < kDisplayThreshold_effect3) {
+//                    NSLog(@"show effect 3!!!");
+//                    [mEffect3Node show];
+//                } else {
+//                    // do nothing
+//                }
+//            });
+//        }
+        return true;
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self hideAll];
+        });
+        return false;
+    }
+}
+
+-(bool)detectCard1:(UIImage*)image {
+    NSString* match = kImageNameCard1;
+    double value = [OpenCVUtil templateMatch:image target:match];
+    
+    NSLog(@"value for %@ is %f", match, value);
+    if (value > kThresholdCard1) {
+//        if (mState == STATE_CARD_OFF) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSInteger v = arc4random() % 100;
-                if (v < kDisplayThreshold_effect1) {
+                if (v < kDisplayThreshold_card1_effect1) {
                     NSLog(@"show effect 1!!!");
                     [mEffect1Node show];
-                } else if (v < kDisplayThreshold_effect2) {
+                } else {
+                    // do nothing
+                }
+            });
+//        }
+        return true;
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self hideAll];
+        });
+        return false;
+    }
+}
+
+-(bool)detectCard2:(UIImage*)image {
+    NSString* match = kImageNameCard2;
+    double value = [OpenCVUtil templateMatch:image target:match];
+    
+    NSLog(@"value for %@ is %f", match, value);
+    if (value > kThresholdCard2) {
+//        if (mState == STATE_CARD_OFF) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSInteger v = arc4random() % 100;
+                if (v < kDisplayThreshold_card2_effect2) {
                     NSLog(@"show effect 2!!!");
                     [mEffect2Node show];
-                } else if (v < kDisplayThreshold_effect3) {
+                } else {
+                    // do nothing
+                }
+            });
+//        }
+        return true;
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self hideAll];
+        });
+        return false;
+    }
+}
+
+-(bool)detectCard3:(UIImage*)image {
+    NSString* match = kImageNameCard3;
+    double value = [OpenCVUtil templateMatch:image target:match];
+    
+    NSLog(@"value for %@ is %f", match, value);
+    if (value > kThresholdCard3) {
+//        if (mState == STATE_CARD_OFF) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSInteger v = arc4random() % 100;
+                if (v < kDisplayThreshold_card3_effect3) {
                     NSLog(@"show effect 3!!!");
                     [mEffect3Node show];
                 } else {
                     // do nothing
                 }
             });
-        }
-        mState = STATE_CARD_ON;
+//        }
+        return true;
     } else {
-        mState = STATE_CARD_OFF;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self hideAll];
+//            [self hideAll];
         });
+        return false;
     }
 }
 
@@ -223,12 +327,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 // logic
             });
         }
-        mState = STATE_CARD_ON;
+        return true;
     } else {
-        mState = STATE_CARD_OFF;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self hideAll];
         });
+        return false;
     }
 }
 */

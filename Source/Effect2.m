@@ -14,7 +14,7 @@
     CGRect screen = [[UIScreen mainScreen] bounds];
     CGFloat width = CGRectGetWidth(screen);
     CGFloat height = CGRectGetHeight(screen);
-    self.position = ccp(width*0.5f, height*0.5f + 40);
+    self.position = ccp(width*0.8f, height*0.3f);
     self.rotation = 90;
     self.visible = false;
     self.scale = 1.f;
