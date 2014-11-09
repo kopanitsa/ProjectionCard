@@ -23,8 +23,8 @@
     self.visible = false;
     self.scale = 1.f;
     
-    self.targetImage = @"fire";
-    self.detectThresholdCard = 0.45f;
+    self.targetImage = @"t2";
+    self.detectThresholdCard = 0.15f;
     self.displayPossibility = 100;
 }
 

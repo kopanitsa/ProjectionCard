@@ -20,8 +20,8 @@
 //+ (double)shapeMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename;  // template matching
 + (double)templateMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename;  // template matching
 
-//+ (void)surfInit;
-//+ (double)surfMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename;
++ (void)surfInit;
++ (double)surfMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename;
 
 
 @end

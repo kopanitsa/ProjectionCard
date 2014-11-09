@@ -169,11 +169,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 -(bool)detectCard:(UIImage*)image node:(EffectBase*)node{
-    double value = [OpenCVUtil templateMatch:image target:node.targetImage];
+    double value = [OpenCVUtil surfMatch:image target:node.targetImage];
     
-    NSLog(@"value for %@ is %f", node.targetImage, value);
-    if (value > node.detectThresholdCard) {
-        NSLog(@"detected effect 1");
+    if (value < node.detectThresholdCard) {
+        NSLog(@"detected effect %@", node.targetImage);
         if (mState == STATE_CARD_OFF) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSInteger v = arc4random() % 100;

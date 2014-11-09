@@ -23,8 +23,8 @@
     self.visible = false;
     self.scale = 1.f;
     
-    self.targetImage = @"bat";
-    self.detectThresholdCard = 0.37f;
+    self.targetImage = @"t3";
+    self.detectThresholdCard = 0.25f;
     self.displayPossibility = 100;
 }
 

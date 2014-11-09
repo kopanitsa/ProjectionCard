@@ -23,8 +23,8 @@
     self.visible = false;
     self.scale = 1.f;
     
-    self.targetImage = @"hallow";
-    self.detectThresholdCard = 0.2f;
+    self.targetImage = @"t1";
+    self.detectThresholdCard = 0.15f;
     self.displayPossibility = 100;
 
 }

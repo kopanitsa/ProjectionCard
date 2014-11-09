@@ -198,7 +198,7 @@
     return max_val;
 }
 
-
+/*
 + (double) surf:(UIImage*)srcUIImage target:(NSString*)targetFilename {
     cv::initModule_nonfree();
     
@@ -226,9 +226,9 @@
     vector<int> ptpairs;
     findPairs(keypoints1, descriptors1, keypoints2, descriptors2, ptpairs);
 }
+*/
 
 
-/*
 + (void)surfInit {
     cv::initModule_nonfree();
 }
@@ -274,22 +274,27 @@
         if( dist > max_dist ) max_dist = dist;
     }
     
-    printf("-- Max dist : %f \n", max_dist );
-    printf("-- Min dist : %f \n", min_dist );
+    //printf("-- Max dist : %f \n", max_dist );
+    //printf("-- Min dist : %f \n", min_dist );
+    return min_dist; // can be improved!!
     
+    /*
     //-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist )
     //-- PS.- radiusMatch can also be used here.
     std::vector< cv::DMatch > good_matches;
     
-    for( int i = 0; i < descriptors_1.rows; i++ )
-    { if( matches[i].distance <= 2*min_dist )
-    { good_matches.push_back( matches[i]); }
+    for( int i = 0; i < descriptors_1.rows; i++ ){
+        if( matches[i].distance <= 0.11 ){
+            good_matches.push_back( matches[i]);
+            printf("%f\n",matches[i].distance);
+        }
     }
     
     
     //return nil;
     return good_matches.size();
+     */
 }
-*/
+
 
 @end
