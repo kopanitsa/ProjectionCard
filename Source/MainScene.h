@@ -20,7 +20,9 @@
 
 typedef enum : NSInteger {
     STATE_CARD_ON = 1,
-    STATE_CARD_OFF
+    STATE_CARD_OFF,
+    STATE_CARD_CHANGED,
+    
 } State;
 
 @end

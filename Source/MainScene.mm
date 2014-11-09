@@ -14,34 +14,10 @@
 
 #define USE_FRONT_CAMERA
 
-// card image : hallow
-NSString * const kImageNameHallow = @"hallow";
-const float kThresholdHallow = 0.9f;
-const int kDisplayThreshold_effect1 = 1.0; // display effect 1 with 80% possibility
-const int kDisplayThreshold_effect2 = 0; // display effect 2 with (90-80)% possibility
-const int kDisplayThreshold_effect3 = 0; // display effect 3 with (90-90)% possibility
-
-// card image : card1
-NSString * const kImageNameCard1 = @"hallow";
-const float kThresholdCard1 = 0.2f;
-const int kDisplayThreshold_card1_effect1 = 100;
-
-// card image : card2
-NSString * const kImageNameCard2 = @"fire";
-const float kThresholdCard2 = 0.45f;
-const int kDisplayThreshold_card2_effect2 = 100;
-
-// card image : card3
-NSString * const kImageNameCard3 = @"bat";
-const float kThresholdCard3 = 0.37f;
-const int kDisplayThreshold_card3_effect3 = 100;
-
-
 
 @implementation MainScene {
     UIViewController* mUiViewController;
     
-    Hallow* mHallowNode;
     Effect1* mEffect1Node;
     Effect2* mEffect2Node;
     Effect3* mEffect3Node;
@@ -70,21 +46,17 @@ const int kDisplayThreshold_card3_effect3 = 100;
 }
 
 - (void) initHallows {
-    mHallowNode = (Hallow*)[CCBReader load:@"Hallow"];
-    [mHallowNode setup];
-    [self addChild:mHallowNode];
-
-    mEffect1Node = (Effect1*)[CCBReader load:@"Effect1"];
+    mEffect1Node = (Effect1*)[Effect1 create];
     [mEffect1Node setup];
     [self addChild:mEffect1Node];
     [mEffect1Node hide];
     
-    mEffect2Node = (Effect2*)[CCBReader load:@"Effect2"];
+    mEffect2Node = (Effect2*)[Effect2 create];
     [mEffect2Node setup];
     [self addChild:mEffect2Node];
     [mEffect2Node hide];
     
-    mEffect3Node = (Effect3*)[CCBReader load:@"Effect3"];
+    mEffect3Node = (Effect3*)[Effect3 create];
     [mEffect3Node setup];
     [self addChild:mEffect3Node];
     [mEffect3Node hide];
@@ -140,21 +112,17 @@ const int kDisplayThreshold_card3_effect3 = 100;
         [self.session addInput:deviceInput];
     }
     
-    // 画像への出力を作成
+    // generate video output
     self.videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
     self.videoDataOutput.alwaysDiscardsLateVideoFrames = YES;
     self.videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)};
-    
-    // ビデオ出力のキャプチャの画像情報のキューを設定
     self.videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
     [self.videoDataOutput setSampleBufferDelegate:self queue:self.videoDataOutputQueue];
     
-    // キャプチャーセッションに追加
+    // add video output to capture session
     if ([self.session canAddOutput:self.videoDataOutput]) {
         [self.session addOutput:self.videoDataOutput];
     }
-    
-    // ビデオ入力のAVCaptureConnectionを取得
     AVCaptureConnection *videoConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
     videoConnection.videoOrientation = [AVFoundationUtil videoOrientationFromDeviceOrientation:[UIDevice currentDevice].orientation];
     videoConnection.videoMinFrameDuration = CMTimeMake(1, 1);
@@ -184,157 +152,42 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 -(void)logic:(UIImage*)input {
     bool ret = false;
-    ret = [self detectHallow:input];
-    if (!ret) {
-        ret = [self detectCard1:input];
-    }
-    if (!ret){
-        ret = [self detectCard2:input];
-    }
-    if (!ret) {
-        ret = [self detectCard3:input];
-    }
+    ret = [self detectCard:input node:mEffect1Node];
+    if (!ret){ ret = [self detectCard:input node:mEffect2Node]; }
+    if (!ret){ ret = [self detectCard:input node:mEffect3Node]; }
+
     mState = ret ? STATE_CARD_ON : STATE_CARD_OFF;
+    if (mState == STATE_CARD_OFF) {
+        [self hideAll];
+    }
 }
 
 -(void) hideAll {
-    [mHallowNode hide];
     [mEffect1Node hide];
     [mEffect2Node hide];
     [mEffect3Node hide];
 }
 
--(bool)detectHallow:(UIImage*)image {
-    NSString* match = kImageNameHallow;
-    double value = [OpenCVUtil templateMatch:image target:match];
+-(bool)detectCard:(UIImage*)image node:(EffectBase*)node{
+    double value = [OpenCVUtil templateMatch:image target:node.targetImage];
     
-    NSLog(@"--------------", match, value);
-    if (value > kThresholdHallow) {
-//        [mEffect1Node show];
-//        if (mState == STATE_CARD_OFF) {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                NSInteger v = arc4random() % 100;
-//                if (v < kDisplayThreshold_effect1) {
-//                    NSLog(@"show effect 1!!!");
-//                    [mEffect1Node show];
-//                } else if (v < kDisplayThreshold_effect2) {
-//                    NSLog(@"show effect 2!!!");
-//                    [mEffect2Node show];
-//                } else if (v < kDisplayThreshold_effect3) {
-//                    NSLog(@"show effect 3!!!");
-//                    [mEffect3Node show];
-//                } else {
-//                    // do nothing
-//                }
-//            });
-//        }
-        return true;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self hideAll];
-        });
-        return false;
-    }
-}
-
--(bool)detectCard1:(UIImage*)image {
-    NSString* match = kImageNameCard1;
-    double value = [OpenCVUtil templateMatch:image target:match];
-    
-    NSLog(@"value for %@ is %f", match, value);
-    if (value > kThresholdCard1) {
-//        if (mState == STATE_CARD_OFF) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSInteger v = arc4random() % 100;
-                if (v < kDisplayThreshold_card1_effect1) {
-                    NSLog(@"show effect 1!!!");
-                    [mEffect1Node show];
-                } else {
-                    // do nothing
-                }
-            });
-//        }
-        return true;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self hideAll];
-        });
-        return false;
-    }
-}
-
--(bool)detectCard2:(UIImage*)image {
-    NSString* match = kImageNameCard2;
-    double value = [OpenCVUtil templateMatch:image target:match];
-    
-    NSLog(@"value for %@ is %f", match, value);
-    if (value > kThresholdCard2) {
-//        if (mState == STATE_CARD_OFF) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSInteger v = arc4random() % 100;
-                if (v < kDisplayThreshold_card2_effect2) {
-                    NSLog(@"show effect 2!!!");
-                    [mEffect2Node show];
-                } else {
-                    // do nothing
-                }
-            });
-//        }
-        return true;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self hideAll];
-        });
-        return false;
-    }
-}
-
--(bool)detectCard3:(UIImage*)image {
-    NSString* match = kImageNameCard3;
-    double value = [OpenCVUtil templateMatch:image target:match];
-    
-    NSLog(@"value for %@ is %f", match, value);
-    if (value > kThresholdCard3) {
-//        if (mState == STATE_CARD_OFF) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSInteger v = arc4random() % 100;
-                if (v < kDisplayThreshold_card3_effect3) {
-                    NSLog(@"show effect 3!!!");
-                    [mEffect3Node show];
-                } else {
-                    // do nothing
-                }
-            });
-//        }
-        return true;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self hideAll];
-        });
-        return false;
-    }
-}
-
-/** template
--(void)detectSomething:(UIImage*)image {
-    NSString* match = @"something";
-    double value = [OpenCVUtil templateMatch:image target:match];
-    
-    NSLog(@"value for %@ is %f", match, value);
-    if (value > THRESHOLD_SOMETHING) {
+    NSLog(@"value for %@ is %f", node.targetImage, value);
+    if (value > node.detectThresholdCard) {
+        NSLog(@"detected effect 1");
         if (mState == STATE_CARD_OFF) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                // logic
+                NSInteger v = arc4random() % 100;
+                if (v < node.displayPossibility) {
+                    NSLog(@"show effect %@!!!", node.targetImage);
+                    [node show];
+                } else {
+                    // do nothing
+                }
             });
         }
         return true;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self hideAll];
-        });
-        return false;
     }
+    return false;
 }
-*/
 
 @end

@@ -8,6 +8,7 @@
 
 #import "OpenCVUtil.h"
 #include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/legacy/compat.hpp>
 
 @implementation OpenCVUtil
 
@@ -89,7 +90,7 @@
     
     return ret;
 }
-
+/*
 + (bool)detect:(UIImage *)srcImage cascade:(NSString *)cascadeFilename {
     
     cv::Mat srcMat = [OpenCVUtil IplImageFromUIImage:srcImage];
@@ -131,8 +132,9 @@
     }
     
     return false;
-}
+}*/
 
+/*
 + (double)shapeMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename {
     // source image
     IplImage *srcImage = cvCreateImage(cvSize(srcUIImage.size.width, srcUIImage.size.height), IPL_DEPTH_8U, 4);
@@ -161,7 +163,7 @@
 
     return result[0];
 }
-
+*/
 
 + (double)templateMatch:(UIImage*)srcUIImage target:(NSString*)targetFilename {
     // source image
@@ -197,7 +199,36 @@
 }
 
 
++ (double) surf:(UIImage*)srcUIImage target:(NSString*)targetFilename {
+    cv::initModule_nonfree();
+    
+    // source image
+    IplImage *srcImage = [self IplImageFromUIImage:srcUIImage];
+    cv::Mat img_pre1 = cv::cvarrToMat(srcImage);
+    // set ROI
+    cv::Mat img_1 = img_pre1(cv::Rect(0, 0, srcImage->width, srcImage->height*0.5));
+    
+    // template image
+    UIImage *templateUIimage = [UIImage imageNamed:targetFilename];
+    IplImage *templateImage = [self IplImageFromUIImage:templateUIimage];
+    cv::Mat img_2 = cv::cvarrToMat(templateImage);
 
+
+    CvSeq *keypoints1 = 0, *descriptors1 = 0;
+    CvSeq *keypoints2 = 0, *descriptors2 = 0;
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    //CvSURFParams params = cvSURFParams(500, 1);
+    
+    // SURFを抽出
+    cvExtractSURF(img_1, 0, &keypoints1, &descriptors1, storage, nil);
+    caqvExtractSURF(img_2, 0, &keypoints2, &descriptors2, storage, params);
+    // 特徴ベクトルの類似度が高いキーポイント同士を線でつなぐ
+    vector<int> ptpairs;
+    findPairs(keypoints1, descriptors1, keypoints2, descriptors2, ptpairs);
+}
+
+
+/*
 + (void)surfInit {
     cv::initModule_nonfree();
 }
@@ -259,6 +290,6 @@
     //return nil;
     return good_matches.size();
 }
-
+*/
 
 @end

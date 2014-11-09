@@ -10,15 +10,23 @@
 
 @implementation Effect1
 
++(EffectBase*)create {
+    return (Effect1*)[CCBReader load:@"Effect1"];
+}
+
 -(void) setup {
     CGRect screen = [[UIScreen mainScreen] bounds];
     CGFloat width = CGRectGetWidth(screen);
     CGFloat height = CGRectGetHeight(screen);
     self.position = ccp(width*0.8f, height*0.3f);
-//    self.position = ccp(0,0);
     self.rotation = 90;
     self.visible = false;
     self.scale = 1.f;
+    
+    self.targetImage = @"hallow";
+    self.detectThresholdCard = 0.2f;
+    self.displayPossibility = 100;
+
 }
 
 -(void) show {

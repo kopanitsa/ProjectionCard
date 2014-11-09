@@ -6,11 +6,8 @@
 //  Copyright (c) 2014年 Apportable. All rights reserved.
 //
 
-#import "CCNode.h"
+#import "EffectBase.h"
 
-@interface Effect2 : CCNode
--(void) setup;
--(void) show;
--(void) hide;
+@interface Effect2 : EffectBase
 
 @end

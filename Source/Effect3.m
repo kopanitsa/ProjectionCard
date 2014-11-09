@@ -10,6 +10,10 @@
 
 @implementation Effect3
 
++(EffectBase*)create {
+    return (Effect3*)[CCBReader load:@"Effect3"];
+}
+
 -(void) setup {
     CGRect screen = [[UIScreen mainScreen] bounds];
     CGFloat width = CGRectGetWidth(screen);
@@ -18,6 +22,10 @@
     self.rotation = 90;
     self.visible = false;
     self.scale = 1.f;
+    
+    self.targetImage = @"bat";
+    self.detectThresholdCard = 0.37f;
+    self.displayPossibility = 100;
 }
 
 -(void) show {

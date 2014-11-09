@@ -10,6 +10,10 @@
 
 @implementation Effect2
 
++(EffectBase*)create {
+    return (Effect2*)[CCBReader load:@"Effect2"];
+}
+
 -(void) setup {
     CGRect screen = [[UIScreen mainScreen] bounds];
     CGFloat width = CGRectGetWidth(screen);
@@ -18,6 +22,10 @@
     self.rotation = 90;
     self.visible = false;
     self.scale = 1.f;
+    
+    self.targetImage = @"fire";
+    self.detectThresholdCard = 0.45f;
+    self.displayPossibility = 100;
 }
 
 -(void) show {
